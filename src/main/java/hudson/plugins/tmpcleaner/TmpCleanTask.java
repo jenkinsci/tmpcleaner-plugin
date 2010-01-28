@@ -58,14 +58,15 @@ public class TmpCleanTask implements Callable<Void, IOException> {
 
                 String[] contents = child.list();
                 if (contents!=null && contents.length==0) {
-                    LOGGER.fine("Deleting "+child);
+                    LOGGER.fine("Deleting empty directory "+child);
                     child.delete();
                 } else {
                     LOGGER.finer(child+" is not empty");
                 }
             }
-            if (stat.atime() > criteria) {
-                LOGGER.fine("Deleting "+child);
+            long atime = stat.atime();
+            if (atime < criteria) {
+                LOGGER.fine(String.format("Deleting %s (atime=%d, diff=%d)", child, atime,atime-criteria));
                 child.delete();
             } else {
                 LOGGER.finer("Skipping "+child+" since it's not old enough");
