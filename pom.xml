@@ -24,4 +24,26 @@
       <name>Olivier Lamy</name>
     </developer>
   </developers>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.jvnet.hudson.main</groupId>
+      <artifactId>remoting</artifactId>
+      <version>1.343</version>
+      <scope>provide</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jruby.ext.posix</groupId>
+      <artifactId>jna-posix</artifactId>
+      <version>1.0.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kohsuke.stapler</groupId>
+      <artifactId>stapler</artifactId>
+      <version>1.131</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
 </project>
