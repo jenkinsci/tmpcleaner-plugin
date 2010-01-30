@@ -12,7 +12,7 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Hudson java.io.tmpdir cleaner plugin</name>
-  <description>Cleans garbage in /tmp</description>
+  <description>Cleans garbage in java.io.tmpdir</description>
   <url>http://wiki.hudson-ci.org/display/HUDSON/Tmp+Cleaner+Plugin</url>
   <developers>
     <developer>
@@ -24,6 +24,12 @@
       <name>Olivier Lamy</name>
     </developer>
   </developers>
+  
+  <scm>
+    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/trunk/hudson/plugins/tmpcleaner</connection>
+    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/tmpcleaner</developerConnection>
+    <url>http://fisheye.hudson-ci.org/browse/Hudson/trunk/hudson/plugins/tmpcleaner</url>
+  </scm>  
   
   <dependencies>
     <dependency>
