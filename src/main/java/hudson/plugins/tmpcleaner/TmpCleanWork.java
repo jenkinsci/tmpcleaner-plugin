@@ -27,12 +27,12 @@ public class TmpCleanWork extends PeriodicWork {
         LOGGER.log(Level.INFO, "run TmpCleanTask days " + days + ", extraDirectories " + extraDirectories );
         for (Computer c : Hudson.getInstance().getComputers()) {
             try {
-                LOGGER.log(Level.INFO, "start run TmpCleanTask on computer " + c.getDisplayName() );
+                LOGGER.log(Level.FINER, "start run TmpCleanTask on computer " + c.getDisplayName() );
                 VirtualChannel ch = c.getChannel();
                 if (ch!=null)
                     ch.callAsync(new TmpCleanTask(extraDirectories,days));
                 
-                LOGGER.log(Level.INFO, "end run TmpCleanTask on computer " + c.getDisplayName() );
+                LOGGER.log(Level.FINER, "end run TmpCleanTask on computer " + c.getDisplayName() );
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Failed to run tmp cleaner for "+c.getDisplayName(),e);
             }

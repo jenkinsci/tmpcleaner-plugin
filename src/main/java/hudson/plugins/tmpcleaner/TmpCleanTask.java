@@ -44,7 +44,7 @@ public class TmpCleanTask implements Callable<Void, IOException> {
         File f = File.createTempFile("tmpclean", null);
         f.delete();
         visit(f.getParentFile());
-        LOGGER.log(Level.INFO, "extraDirectories " + extraDirectories + ", days " + days );
+        LOGGER.fine( "extraDirectories " + extraDirectories + ", days " + days );
         try
         {
         if (extraDirectories != null)
@@ -58,7 +58,7 @@ public class TmpCleanTask implements Callable<Void, IOException> {
                 }
                 else
                 {
-                    LOGGER.log(Level.INFO, "dir "+ dir.getPath() + " not exist ");
+                    LOGGER.fine( "dir "+ dir.getPath() + " not exist ");
                 }
             }
         }
@@ -75,7 +75,7 @@ public class TmpCleanTask implements Callable<Void, IOException> {
     }
 
     private void visit(File dir) {
-        LOGGER.log(Level.INFO, "visit "+dir);
+        LOGGER.fine("visit "+dir);
         File[] children = dir.listFiles();
         if (children==null)     return; // just being defensive
 
@@ -85,7 +85,7 @@ public class TmpCleanTask implements Callable<Void, IOException> {
             try {
                 stat = posix.lstat(child.getPath());
             } catch (RuntimeException e) {// handle lstat failure gracefully
-                LOGGER.log(Level.INFO, "lstat failed on "+child);
+                LOGGER.log(Level.INFO, "lstat failed on "+child + ", " + e.getMessage());
                 continue;
             }
 
