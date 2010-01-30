@@ -11,13 +11,17 @@
   <artifactId>tmpcleaner</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
-  <name>Hudson /tmp cleaner plugin</name>
+  <name>Hudson java.io.tmpdir cleaner plugin</name>
   <description>Cleans garbage in /tmp</description>
   <url>http://wiki.hudson-ci.org/display/HUDSON/Tmp+Cleaner+Plugin</url>
   <developers>
     <developer>
       <id>kohsuke</id>
       <name>Kohsuke Kawaguchi</name>
+    </developer>
+    <developer>
+      <id>olamy</id>
+      <name>Olivier Lamy</name>
     </developer>
   </developers>
 </project>
