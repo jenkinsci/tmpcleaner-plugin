@@ -3,11 +3,15 @@ package hudson.plugins.tmpcleaner;
 import hudson.os.PosixAPI;
 import hudson.remoting.Callable;
 import hudson.util.TimeUnit2;
+
+import org.apache.commons.lang.StringUtils;
 import org.jruby.ext.posix.FileStat;
 import org.jruby.ext.posix.POSIX;
+import org.kohsuke.stapler.framework.io.IOException2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.StringTokenizer;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,8 +26,18 @@ public class TmpCleanTask implements Callable<Void, IOException> {
     private transient POSIX posix;
     private transient int euid;
 
+    
+    // 
+    private String extraDirectories;
+    private long days;
+    public TmpCleanTask(String extraDirectories, long days)
+    {
+        this.extraDirectories = extraDirectories;
+        this.days = days;
+    }
+    
     public Void call() throws IOException {
-        criteria = (System.currentTimeMillis() - TimeUnit2.DAYS.toMillis(7))/1000; // time_t is # of seconds
+        criteria = (System.currentTimeMillis() - TimeUnit2.DAYS.toMillis(days))/1000; // time_t is # of seconds
 
         posix = PosixAPI.get();
         euid = posix.geteuid();
@@ -31,11 +45,38 @@ public class TmpCleanTask implements Callable<Void, IOException> {
         File f = File.createTempFile("tmpclean", null);
         f.delete();
         visit(f.getParentFile());
-
+        LOGGER.log(Level.INFO, "extraDirectories " + extraDirectories + ", days " + days );
+        try
+        {
+        if (extraDirectories != null)
+        {
+            StringTokenizer stringTokenizer = new StringTokenizer( extraDirectories, "," );
+            while (stringTokenizer.hasMoreElements())
+            {
+                File dir = new File( stringTokenizer.nextToken() );
+                if (dir.exists()) {
+                    visit( dir );
+                }
+                else
+                {
+                    LOGGER.log(Level.INFO, "dir "+ dir.getPath() + " not exist ");
+                }
+            }
+        }
+        } catch (Exception e)
+        {
+            LOGGER.log( Level.SEVERE, e.getMessage(), e );
+            throw new IOException2( e.getMessage(), e );
+        }
+        finally
+        {
+            LOGGER.log(Level.INFO, " end TmpCleanTask " );
+        }
         return null;
     }
 
     private void visit(File dir) {
+        LOGGER.log(Level.INFO, "visit "+dir);
         File[] children = dir.listFiles();
         if (children==null)     return; // just being defensive
 
@@ -58,7 +99,7 @@ public class TmpCleanTask implements Callable<Void, IOException> {
 
                 String[] contents = child.list();
                 if (contents!=null && contents.length==0) {
-                    LOGGER.fine("Deleting empty directory "+child);
+                    LOGGER.info("Deleting empty directory "+child);
                     child.delete();
                 } else {
                     LOGGER.finer(child+" is not empty");
@@ -66,7 +107,7 @@ public class TmpCleanTask implements Callable<Void, IOException> {
             }
             long atime = stat.atime();
             if (atime < criteria) {
-                LOGGER.fine(String.format("Deleting %s (atime=%d, diff=%d)", child, atime,atime-criteria));
+                LOGGER.info(String.format("Deleting %s (atime=%d, diff=%d)", child, atime,atime-criteria));
                 child.delete();
             } else {
                 LOGGER.finer("Skipping "+child+" since it's not old enough");
@@ -81,8 +122,10 @@ public class TmpCleanTask implements Callable<Void, IOException> {
         ConsoleHandler h = new ConsoleHandler();
         h.setLevel(Level.FINE);
         LOGGER.addHandler(h);
-        new TmpCleanTask().call();
+        new TmpCleanTask("", 2).call();
     }
 
     private static final Logger LOGGER = Logger.getLogger(TmpCleanTask.class.getName());
+    
+   
 }

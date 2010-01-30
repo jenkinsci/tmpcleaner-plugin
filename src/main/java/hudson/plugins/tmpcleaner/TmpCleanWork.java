@@ -20,21 +20,40 @@ import java.util.logging.Logger;
 public class TmpCleanWork extends PeriodicWork {
     @Override
     public long getRecurrencePeriod() {
-        return TimeUnit2.HOURS.toMillis(6);
+        return MIN * minutes;
     }
 
     @Override
     protected void doRun() {
+        LOGGER.log(Level.INFO, "run TmpCleanTask days " + days + ", extraDirectories " + extraDirectories );
         for (Computer c : Hudson.getInstance().getComputers()) {
             try {
+                LOGGER.log(Level.INFO, "start run TmpCleanTask on computer " + c.getDisplayName() );
                 VirtualChannel ch = c.getChannel();
                 if (ch!=null)
-                    ch.callAsync(new TmpCleanTask());
+                    ch.callAsync(new TmpCleanTask(extraDirectories,days));
+                
+                LOGGER.log(Level.INFO, "end run TmpCleanTask on computer " + c.getDisplayName() );
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Failed to run tmp cleaner for "+c.getDisplayName(),e);
             }
         }
     }
-
+    
     private static final Logger LOGGER = Logger.getLogger(TmpCleanWork.class.getName());
+    
+    /**
+     * recurence period in minutes
+     */
+    public static long minutes = Long.valueOf( System.getProperty(TmpCleanWork.class.getName()+".minutes", "360" ) );
+    
+    /**
+     * extra directories to cleanup comma separated 
+     */
+    public static String extraDirectories = System.getProperty( TmpCleanWork.class.getName() + ".extraDirectories" );
+    
+    /**
+     * delete files not accessed since x days
+     */
+    public static long days = Long.valueOf( System.getProperty(TmpCleanWork.class.getName()+".days", "7" ) );     
 }
