@@ -5,7 +5,6 @@ import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.PeriodicWork;
 import hudson.remoting.VirtualChannel;
-import hudson.util.TimeUnit2;
 
 import java.io.IOException;
 import java.util.logging.Level;

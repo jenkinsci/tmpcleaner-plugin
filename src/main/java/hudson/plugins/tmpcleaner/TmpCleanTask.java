@@ -4,17 +4,16 @@ import hudson.os.PosixAPI;
 import hudson.remoting.Callable;
 import hudson.util.TimeUnit2;
 
-import org.apache.commons.lang.StringUtils;
-import org.jruby.ext.posix.FileStat;
-import org.jruby.ext.posix.POSIX;
-import org.kohsuke.stapler.framework.io.IOException2;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jruby.ext.posix.FileStat;
+import org.jruby.ext.posix.POSIX;
+import org.kohsuke.stapler.framework.io.IOException2;
 
 /**
  * Recursively visits a directory and remove unused files. 
