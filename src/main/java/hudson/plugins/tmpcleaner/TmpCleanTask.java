@@ -47,21 +47,22 @@ public class TmpCleanTask implements Callable<Void, IOException> {
         LOGGER.fine( "extraDirectories " + extraDirectories + ", days " + days );
         try
         {
-        if (extraDirectories != null)
-        {
-            StringTokenizer stringTokenizer = new StringTokenizer( extraDirectories, "," );
-            while (stringTokenizer.hasMoreElements())
+            if (extraDirectories != null)
             {
-                File dir = new File( stringTokenizer.nextToken() );
-                if (dir.exists()) {
-                    visit( dir );
-                }
-                else
+                StringTokenizer stringTokenizer = new StringTokenizer( extraDirectories, "," );
+                while (stringTokenizer.hasMoreElements())
                 {
-                    LOGGER.fine( "dir "+ dir.getPath() + " not exist ");
+                    File dir = new File( stringTokenizer.nextToken() );
+                    if (dir.exists())
+                    {
+                        visit( dir );
+                    }
+                    else
+                    {
+                        LOGGER.fine( "dir "+ dir.getPath() + " not exist ");
+                    }
                 }
             }
-        }
         } catch (Exception e)
         {
             LOGGER.log( Level.SEVERE, e.getMessage(), e );
