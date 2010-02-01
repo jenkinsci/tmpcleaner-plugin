@@ -25,12 +25,6 @@
     </developer>
   </developers>
   
-  <scm>
-    <connection>scm:svn:http://guest@svn.dev.java.net/svn/hudson/trunk/hudson/plugins/tmpcleaner</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/tmpcleaner</developerConnection>
-    <url>http://fisheye.hudson-ci.org/browse/Hudson/trunk/hudson/plugins/tmpcleaner</url>
-  </scm>  
-  
   <dependencies>
     <dependency>
       <groupId>org.jvnet.hudson.main</groupId>
