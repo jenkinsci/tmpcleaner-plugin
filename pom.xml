@@ -9,7 +9,7 @@
   </parent>
   
   <artifactId>tmpcleaner</artifactId>
-  <version>1.0</version>
+  <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Hudson java.io.tmpdir cleaner plugin</name>
   <description>Cleans garbage in java.io.tmpdir</description>
@@ -26,9 +26,9 @@
   </developers>
   
   <scm>
-    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/tags/tmpcleaner-1.0</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/tmpcleaner-1.0</developerConnection>
-    <url>http://fisheye.hudson-ci.org/browse/Hudson/tags/tmpcleaner-1.0</url>
+    <connection>scm:svn:http://guest@svn.dev.java.net/svn/hudson/trunk/hudson/plugins/tmpcleaner</connection>
+    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/hudson/plugins/tmpcleaner</developerConnection>
+    <url>http://fisheye.hudson-ci.org/browse/Hudson/trunk/hudson/plugins/tmpcleaner</url>
   </scm>  
   
   <dependencies>
