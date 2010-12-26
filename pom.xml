@@ -14,6 +14,13 @@
   <name>Hudson java.io.tmpdir cleaner plugin</name>
   <description>Cleans garbage in java.io.tmpdir</description>
   <url>http://wiki.hudson-ci.org/display/HUDSON/Tmp+Cleaner+Plugin</url>
+  
+  <scm>
+   <connection>scm:git:git://github.com/hudson/tmpcleaner-plugin.git</connection>
+   <developerConnection>scm:git:git@github.com:hudson/tmpcleaner-plugin.git</developerConnection>
+   <url>https://github.com/hudson/tmpcleaner-plugin</url>
+  </scm>  
+  
   <developers>
     <developer>
       <id>kohsuke</id>
@@ -45,4 +52,14 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  
+  <distributionManagement>
+    <!--  fix maven3 warning for id local -->
+    <snapshotRepository>
+      <!-- prevent accidental deployment of SNAPSHOTS to repository -->
+      <id>local.repository</id>
+      <url>file:.</url>
+    </snapshotRepository>
+  </distributionManagement>  
+  
 </project>
