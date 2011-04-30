@@ -1,3 +1,3 @@
-sources are in git https://github.com/hudson/tmpcleaner-plugin
+sources are in git https://github.com/jenkinsci/tmpcleaner-plugin
 
 
