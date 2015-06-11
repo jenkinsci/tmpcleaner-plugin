@@ -1,7 +1,6 @@
 package hudson.plugins.tmpcleaner;
 
 import hudson.os.PosixAPI;
-import hudson.remoting.Callable;
 import hudson.util.TimeUnit2;
 
 import java.io.File;
@@ -11,22 +10,24 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jenkins.security.MasterToSlaveCallable;
+
 import org.jruby.ext.posix.FileStat;
 import org.jruby.ext.posix.POSIX;
-import org.kohsuke.stapler.framework.io.IOException2;
 
 /**
- * Recursively visits a directory and remove unused files. 
+ * Recursively visits a directory and remove unused files.
  *
  * @author Kohsuke Kawaguchi
  */
-public class TmpCleanTask implements Callable<Void, IOException> {
+public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
+    private static final long serialVersionUID = 1L;
     private transient long criteria;
     private transient POSIX posix;
     private transient int euid;
 
-    
-    // 
+
+    //
     private String extraDirectories;
     private long days;
     public TmpCleanTask(String extraDirectories, long days)
@@ -34,8 +35,10 @@ public class TmpCleanTask implements Callable<Void, IOException> {
         this.extraDirectories = extraDirectories;
         this.days = days;
     }
-    
+
+    @Override
     public Void call() throws IOException {
+
         criteria = (System.currentTimeMillis() - TimeUnit2.DAYS.toMillis(days))/1000; // time_t is # of seconds
 
         posix = PosixAPI.get();
@@ -66,7 +69,7 @@ public class TmpCleanTask implements Callable<Void, IOException> {
         } catch (Exception e)
         {
             LOGGER.log( Level.SEVERE, e.getMessage(), e );
-            throw new IOException2( e.getMessage(), e );
+            throw new IOException( e.getMessage(), e );
         }
         finally
         {
@@ -126,6 +129,6 @@ public class TmpCleanTask implements Callable<Void, IOException> {
     }
 
     private static final Logger LOGGER = Logger.getLogger(TmpCleanTask.class.getName());
-    
-   
+
+
 }
