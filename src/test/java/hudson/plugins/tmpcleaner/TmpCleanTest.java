@@ -26,6 +26,8 @@ package hudson.plugins.tmpcleaner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import hudson.FilePath;
 import hudson.model.Computer;
 import hudson.node_monitors.MonitorOfflineCause;
 import hudson.node_monitors.NodeMonitor;
@@ -34,6 +36,7 @@ import hudson.slaves.DumbSlave;
 import hudson.slaves.OfflineCause;
 
 import java.io.File;
+import java.io.FileWriter;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +51,7 @@ public class TmpCleanTest {
         Computer c = slave.toComputer();
 
         File marker = File.createTempFile("TmpCleanTest", "cleanupAfterOffline");
+        new FilePath(marker).write("Some content", "UTF-8");
 
         // Is there a java way to set atime?
         assertEquals(0, new ProcessBuilder("touch", "-t" , "197001010000", marker.getCanonicalPath()).start().waitFor());

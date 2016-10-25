@@ -1,5 +1,6 @@
 package hudson.plugins.tmpcleaner;
 
+import hudson.Functions;
 import hudson.os.PosixAPI;
 import hudson.util.TimeUnit2;
 
@@ -46,7 +47,9 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
 
         File f = File.createTempFile("tmpclean", null);
         f.delete();
-        visit(f.getParentFile());
+        File tempDir = f.getParentFile();
+        long preFreeSpace = tempDir.getFreeSpace();
+        visit(tempDir);
         LOGGER.fine( "extraDirectories " + extraDirectories + ", days " + days );
         try
         {
@@ -73,7 +76,15 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
         }
         finally
         {
-            LOGGER.log(Level.INFO, " end TmpCleanTask " );
+            long afterFreeSpace = tempDir.getFreeSpace();
+            LOGGER.log(
+                    Level.INFO,
+                    "Temporary directory cleanup fried {0} disk space, available {1}",
+                    new String[] {
+                            Functions.humanReadableByteSize(afterFreeSpace - preFreeSpace),
+                            Functions.humanReadableByteSize(afterFreeSpace)
+                    }
+            );
         }
         return null;
     }
@@ -102,7 +113,7 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
 
                 String[] contents = child.list();
                 if (contents!=null && contents.length==0) {
-                    LOGGER.info("Deleting empty directory "+child);
+                    LOGGER.fine("Deleting empty directory "+child);
                     child.delete();
                 } else {
                     LOGGER.finer(child+" is not empty");
@@ -110,7 +121,7 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
             }
             long atime = stat.atime();
             if (atime < criteria) {
-                LOGGER.info(String.format("Deleting %s (atime=%d, diff=%d)", child, atime,atime-criteria));
+                LOGGER.fine(String.format("Deleting %s (atime=%d, diff=%d)", child, atime,atime-criteria));
                 child.delete();
             } else {
                 LOGGER.finer("Skipping "+child+" since it's not old enough");
