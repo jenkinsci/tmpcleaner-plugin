@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>tmpcleaner</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
   <packaging>hpi</packaging>
   <name>Jenkins java.io.tmpdir cleaner plugin</name>
   <description>Cleans garbage in java.io.tmpdir</description>
@@ -23,7 +23,7 @@
    <connection>scm:git:git://github.com/jenkinsci/tmpcleaner-plugin.git</connection>
    <developerConnection>scm:git:git@github.com:jenkinsci/tmpcleaner-plugin.git</developerConnection>
    <url>https://github.com/jenkinsci/tmpcleaner-plugin</url>
-    <tag>HEAD</tag>
+    <tag>tmpcleaner-1.3</tag>
   </scm>
 
   <developers>
