@@ -27,8 +27,6 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
     private transient POSIX posix;
     private transient int euid;
 
-
-    //
     private String extraDirectories;
     private long days;
     public TmpCleanTask(String extraDirectories, long days)
@@ -46,7 +44,7 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
         euid = posix.geteuid();
 
         File f = File.createTempFile("tmpclean", null);
-        f.delete();
+        delete(f);
         File tempDir = f.getParentFile();
         long preFreeSpace = tempDir.getFreeSpace();
         visit(tempDir);
@@ -114,7 +112,7 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
                 String[] contents = child.list();
                 if (contents!=null && contents.length==0) {
                     LOGGER.fine("Deleting empty directory "+child);
-                    child.delete();
+                    delete(child);
                 } else {
                     LOGGER.finer(child+" is not empty");
                 }
@@ -122,10 +120,16 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
             long atime = stat.atime();
             if (atime < criteria) {
                 LOGGER.fine(String.format("Deleting %s (atime=%d, diff=%d)", child, atime,atime-criteria));
-                child.delete();
+                delete(child);
             } else {
                 LOGGER.finer("Skipping "+child+" since it's not old enough");
             }
+        }
+    }
+
+    private void delete(File child) {
+        if (child.delete()) {
+            LOGGER.info("Deletion failed: " + child);
         }
     }
 
@@ -140,6 +144,4 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
     }
 
     private static final Logger LOGGER = Logger.getLogger(TmpCleanTask.class.getName());
-
-
 }

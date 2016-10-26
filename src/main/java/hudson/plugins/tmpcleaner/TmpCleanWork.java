@@ -1,5 +1,6 @@
 package hudson.plugins.tmpcleaner;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.PeriodicWork;
 import hudson.model.Computer;
@@ -34,7 +35,7 @@ public class TmpCleanWork extends PeriodicWork {
     @Override
     protected void doRun() {
         LOGGER.log(Level.INFO, "run TmpCleanTask days " + days + ", extraDirectories " + extraDirectories );
-        for (Computer c : Jenkins.getInstance().getComputers()) {
+        for (Computer c : Jenkins.getActiveInstance().getComputers()) {
             scheduleCleanup(c);
         }
     }
@@ -58,17 +59,20 @@ public class TmpCleanWork extends PeriodicWork {
     /**
      * recurence period in minutes
      */
-    public static long minutes = Long.valueOf( System.getProperty(TmpCleanWork.class.getName()+".minutes", "360" ) );
+    @SuppressFBWarnings(value = "MS_SHOULD_BE_FINAL", justification = "Modifiable from groovy")
+    public static long minutes = Long.parseLong( System.getProperty(TmpCleanWork.class.getName()+".minutes", "360" ) );
     
     /**
      * extra directories to cleanup comma separated 
      */
+    @SuppressFBWarnings(value = "MS_SHOULD_BE_FINAL", justification = "Modifiable from groovy")
     public static String extraDirectories = System.getProperty( TmpCleanWork.class.getName() + ".extraDirectories" );
     
     /**
      * delete files not accessed since x days
      */
-    public static long days = Long.valueOf( System.getProperty(TmpCleanWork.class.getName()+".days", "7" ) );
+    @SuppressFBWarnings(value = "MS_SHOULD_BE_FINAL", justification = "Modifiable from groovy")
+    public static long days = Long.parseLong(System.getProperty(TmpCleanWork.class.getName() + ".days", "7"));
 
     @Extension
     @Restricted(DoNotUse.class)
