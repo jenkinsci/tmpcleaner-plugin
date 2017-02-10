@@ -77,7 +77,7 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
             long afterFreeSpace = tempDir.getFreeSpace();
             LOGGER.log(
                     Level.INFO,
-                    "Temporary directory cleanup fried {0} disk space, available {1}",
+                    "Temporary directory cleanup freed {0} disk space, available {1}",
                     new String[] {
                             Functions.humanReadableByteSize(afterFreeSpace - preFreeSpace),
                             Functions.humanReadableByteSize(afterFreeSpace)
