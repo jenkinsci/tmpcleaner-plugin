@@ -128,7 +128,7 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
     }
 
     private void delete(File child) {
-        if (child.delete()) {
+        if (!child.delete()) {
             LOGGER.info("Deletion failed: " + child);
         }
     }
