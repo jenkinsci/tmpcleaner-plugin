@@ -26,8 +26,10 @@ package hudson.plugins.tmpcleaner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
 import hudson.FilePath;
+import hudson.Functions;
 import hudson.model.Computer;
 import hudson.node_monitors.MonitorOfflineCause;
 import hudson.node_monitors.NodeMonitor;
@@ -36,7 +38,6 @@ import hudson.slaves.DumbSlave;
 import hudson.slaves.OfflineCause;
 
 import java.io.File;
-import java.io.FileWriter;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,6 +48,7 @@ public class TmpCleanTest {
     @Rule public JenkinsRule j = new JenkinsRule();
 
     @Test public void cleanupAfterOffline() throws Exception {
+        assumeFalse(Functions.isWindows());
         DumbSlave slave = j.createOnlineSlave();
         Computer c = slave.toComputer();
 
