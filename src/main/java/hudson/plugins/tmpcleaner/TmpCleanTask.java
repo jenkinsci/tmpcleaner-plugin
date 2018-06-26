@@ -1,20 +1,20 @@
 package hudson.plugins.tmpcleaner;
 
 import hudson.Functions;
-import hudson.os.PosixAPI;
 import hudson.util.TimeUnit2;
+import jenkins.security.MasterToSlaveCallable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jenkins.security.MasterToSlaveCallable;
-
-import org.jruby.ext.posix.FileStat;
-import org.jruby.ext.posix.POSIX;
 
 /**
  * Recursively visits a directory and remove unused files.
@@ -24,8 +24,7 @@ import org.jruby.ext.posix.POSIX;
 public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
     private static final long serialVersionUID = 1L;
     private transient long criteria;
-    private transient POSIX posix;
-    private transient int euid;
+    private transient UserPrincipal self;
 
     private String extraDirectories;
     private long days;
@@ -38,10 +37,9 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
     @Override
     public Void call() throws IOException {
 
-        criteria = (System.currentTimeMillis() - TimeUnit2.DAYS.toMillis(days))/1000; // time_t is # of seconds
+        criteria = System.currentTimeMillis() - TimeUnit2.DAYS.toMillis(days);
 
-        posix = PosixAPI.get();
-        euid = posix.geteuid();
+        self = FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName(System.getProperty("user.name"));
 
         File f = File.createTempFile("tmpclean", null);
         delete(f);
@@ -87,26 +85,20 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
         return null;
     }
 
-    private void visit(File dir) {
+    private void visit(File dir) throws IOException {
         LOGGER.fine("visit "+dir);
         File[] children = dir.listFiles();
         if (children==null)     return; // just being defensive
 
         for (File child : children) {
-            // lstat so that we won't visit into directories that are symlinked
-            FileStat stat;
-            try {
-                stat = posix.lstat(child.getPath());
-            } catch (RuntimeException e) {// handle lstat failure gracefully
-                LOGGER.log(Level.INFO, "lstat failed on "+child + ", " + e.getMessage());
-                continue;
-            }
 
-            if (stat.uid()!=euid) {
+            final PosixFileAttributes attributes = Files.readAttributes(child.toPath(), PosixFileAttributes.class);
+
+            if (!attributes.owner().equals(self)) {
                 LOGGER.finer("Skipping "+child+" since we don't own it");
                 continue;
             }
-            if (stat.isDirectory()) {
+            if (attributes.isDirectory()) {
                 visit(child);
 
                 String[] contents = child.list();
@@ -117,7 +109,7 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
                     LOGGER.finer(child+" is not empty");
                 }
             }
-            long atime = stat.atime();
+            long atime = attributes.lastAccessTime().toMillis();
             if (atime < criteria) {
                 LOGGER.fine(String.format("Deleting %s (atime=%d, diff=%d)", child, atime,atime-criteria));
                 delete(child);

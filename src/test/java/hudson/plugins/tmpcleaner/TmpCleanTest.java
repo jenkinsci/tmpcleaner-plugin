@@ -38,6 +38,9 @@ import hudson.slaves.DumbSlave;
 import hudson.slaves.OfflineCause;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,7 +59,8 @@ public class TmpCleanTest {
         new FilePath(marker).write("Some content", "UTF-8");
 
         // Is there a java way to set atime?
-        assertEquals(0, new ProcessBuilder("touch", "-t" , "197001010000", marker.getCanonicalPath()).start().waitFor());
+        Files.setAttribute(marker.toPath(), "basic:lastAccessTime", FileTime.from(197001010000L, TimeUnit.SECONDS));
+        System.out.println(marker);
 
         c.setTemporarilyOffline(true, new OfflineCause.ByCLI("cli"));
         Thread.sleep(1000);
