@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 
 import jenkins.security.MasterToSlaveCallable;
 
-import org.jruby.ext.posix.FileStat;
-import org.jruby.ext.posix.POSIX;
+import jnr.posix.FileStat;
+import jnr.posix.POSIX;
 
 /**
  * Recursively visits a directory and remove unused files.
@@ -40,7 +40,7 @@ public class TmpCleanTask extends MasterToSlaveCallable<Void, IOException> {
 
         criteria = (System.currentTimeMillis() - TimeUnit2.DAYS.toMillis(days))/1000; // time_t is # of seconds
 
-        posix = PosixAPI.get();
+        posix = PosixAPI.jnr();
         euid = posix.geteuid();
 
         File f = File.createTempFile("tmpclean", null);
